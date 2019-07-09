@@ -1,16 +1,5 @@
-import os
-
-config_path = os.getcwd() + "/file"
-input = open(config_path,'r')
-input = input.read().replace(' ', '')
-
-class Pipeline:
-    def __init__(self):
-        config_path = os.getcwd() + "/file"
-        text = open(config_path, 'r')
-        expression = input.read().replace('','')
-
 class Node:
+
     def __init__(self,value):
         expressions = ['/', '*', '+', '-', '(', ')', '^']
         if value in expressions:
@@ -61,6 +50,7 @@ class Node:
         return -1
 
 class Parser:
+
     def recursive_paren_check(self, given_string, paren_count):
         if len(given_string) == 0:
             return paren_count == 0
@@ -81,38 +71,20 @@ class Parser:
             return failed_tree
         tokens = ['/', '*', '+', '-', '(', ')', '^']
         num = 0
-        counter = 0
-        i = 'a'
-        while(counter < len(expression)):
-            i = expression[counter]
-            print("i is " + i)
-
-            
-                if i in ['(',')']:
-                    print("seeing a " + i)
-                    print("getting the substring with paren")
-                    print(expression.rfind(')'))
-                    print(expression[1:expression.rfind(')')])
-                    temp_tree = self.parse_to_tree(expression[counter:expression.rfind(')')])
-                    num = temp_tree.evaluate_tree()
-                    counter = expression.rfind(')')-1
-                    #tree.add_to_tree(Node(num),temp_tree.head)
-                else:
-                    print("adding " + i)
-                    tree.add_to_tree(Node(num),Node(i))
-                    num = 0
-            else:
-                num = i
-            counter = counter + 1
+        i = 0
+        while(i < len(expression)-1):
+            current_num = expression[i]
+            current_token = expression[i+1]
+            if current_num not in tokens:
+                tree.add_to_tree(Node(current_num), Node(current_token))
+            i = i + 1
+            num = expression[i]
         tree.add_to_tree(Node(num),None)
         return tree
 
     def create_subtree(self, substring):
         if(len(substring) == 0):
             return None
-
-
-
 
 class AST:
 
@@ -128,7 +100,6 @@ class AST:
             self.current = token
             self.head = token
             token.set_left(num)
-            print("should only show once")
             return
         if token == None:
             self.current.set_right(num)
@@ -145,7 +116,6 @@ class AST:
                 temp_head = self.head
                 self.current = self.head.get_right()
                 while(flag):
-                    print("finding a place for node ")
                     if self.current.evaluate(token) > -1:
                         token.set_left(self.current)
                         temp_head.set_right(token)
@@ -162,31 +132,11 @@ class AST:
             self.current = token
             return
 
-    def test_print(self):
-        print(self.head.get_value())
-        print("-----")
-        print(self.head.get_left().get_value())
-        print(self.head.get_right().get_value())
-        print("-----")
-        print(self.head.get_left().get_left().get_value())
-        print(self.head.get_left().get_right().get_value())
-        print("-----")
-        print(self.head.get_right().get_left().get_value())
-        print(self.head.get_right().get_right().get_value())
-        print("-----")
-        print(self.head.get_left().get_right().get_left().get_value())
-        print(self.head.get_left().get_right().get_right().get_value())
-        print("-----")
-        print(self.head.get_right().get_right().get_left().get_value())
-        print(self.head.get_right().get_right().get_right().get_value())
-
     def print_tree(self):
         self.print_tree_helper(self.head)
 
     def print_tree_helper(self, node):
         if node.get_left() is None:
-            print(node.get_value())
-            print("left is none...")
             return
         self.print_tree_helper(node.get_left())
         print(node.get_value())
@@ -225,18 +175,14 @@ class AST:
         if t is '^':
             return v1**v2
 
-#Parser().parse_to_tree("2+8/3*6*9").print_tree()
+#Write your expression below
+expression = "7*4^3-1"
 
+#The expression is put into a tree in an order such that an algorithm can identify the order to do each operation
+abstract_tree = Parser().parse_to_tree(expression)
 
-print(Parser().parse_to_tree("(2+2+2)").evaluate_tree())
+#Expression is evaluated printing each step
+result = abstract_tree.evaluate_tree()
 
-# def recursive_paren_check(given_string, paren_count):
-#     if len(given_string) == 0:
-#         print("reduced string")
-#         print(paren_count==0)
-#         return paren_count==0
-#     if given_string[0]=='(':
-#         paren_count+=1
-#     if given_string[0]==')':
-#         paren_count-=1
-#     return recursive_paren_check(given_string[1:len(given_string)],paren_count)
+#Print result
+print(result)
